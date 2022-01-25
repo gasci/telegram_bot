@@ -57,7 +57,12 @@ class HouseBot:
         data["source_count"] = source_count
         data["titles"] = titles
 
-        result = str(data["source_count"]) + "\n" +  str(data["titles"])
+        title_prints = ""
+
+        for title in data["titles"]:
+            title_prints += "\n" + title
+
+        result = str(data["source_count"]) + "\n" +  title_prints
 
         self.bot.send_message(message.chat.id, result)
 
