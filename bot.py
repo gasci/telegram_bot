@@ -60,9 +60,15 @@ class HouseBot:
         title_prints = ""
 
         for title in data["titles"]:
-            title_prints += "\n" + title
 
-        result = str(data["source_count"]) + "\n" +  title_prints
+            if "WBS" not in title:
+                title_prints += "\n" + title
+        
+        if not title_prints:
+
+            title_prints = "No WBS results"
+
+        result = str(data["source_count"]) + "\n" +  title_prints + "\n"
 
         self.bot.send_message(message.chat.id, result)
 
