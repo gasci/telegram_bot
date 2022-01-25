@@ -16,6 +16,7 @@ class HouseBot:
         # load all environments
         load_dotenv()
 
+        self.scheduler = None
         self.TELEGRAM_API_KEY = os.environ.get("TELEGRAM_API_KEY")
         self.bot = telebot.TeleBot(self.TELEGRAM_API_KEY)
         self.INTERVAL_SECONDS = 60 * 60 * int(os.environ.get("INTERVAL_HOURS")) # hours
@@ -80,6 +81,7 @@ def create_app():
     app = HouseBot()
     return app
 
+#create_app()
 
 # page = requests.get("https://www.berlinovo.de/en/housing/search")
 # page.content
