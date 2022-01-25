@@ -15,33 +15,36 @@ class HouseBot:
 
         # load all environments
         load_dotenv()
-
-        self.scheduler = None
+        
         self.TELEGRAM_API_KEY = os.environ.get("TELEGRAM_API_KEY")
-        self.bot = telebot.TeleBot(self.TELEGRAM_API_KEY)
         self.INTERVAL_SECONDS = 60 * 60 * int(os.environ.get("INTERVAL_HOURS")) # hours
-
-        # print(self.TELEGRAM_API_KEY)
-
-        # Handle /start command
+        self.bot = telebot.TeleBot(self.TELEGRAM_API_KEY)
+        self.scheduler = BackgroundScheduler(timezone="Europe/Berlin")
+        
         @self.bot.message_handler(commands=["start"])
         def start_command(message):
-            
-            # run the function once
-            self.fetch_data(message)
 
-            # run it with an interval
-            self.scheduler = BackgroundScheduler(timezone="Europe/Berlin")
-            self.scheduler.add_job(func=lambda: self.fetch_data(message), id="fetch_data", trigger="interval", seconds=self.INTERVAL_SECONDS)
-            self.scheduler.start()
+            try:
+                # run the function once
+                self.fetch_data(message)
 
-            atexit.register(lambda: self.scheduler.shutdown())
+                # run it with an interval
+                self.scheduler.add_job(func=lambda: self.fetch_data(message), id="fetch_data", trigger="interval", seconds=self.INTERVAL_SECONDS)
+                self.scheduler.start()
 
+                atexit.register(lambda: self.scheduler.shutdown())
+            except Exception as e:
+                print(e)
+                pass
 
-        # Handle /start command
         @self.bot.message_handler(commands=["stop"])
         def stop_command(message):
-            self.scheduler.pause_job(job_id='fetch_data')
+
+            try:
+                self.scheduler.pause_job(job_id='fetch_data')
+            except Exception as e:
+                print(e)
+                pass
             
         self.bot.polling()
 
@@ -81,7 +84,7 @@ def create_app():
     app = HouseBot()
     return app
 
-#create_app()
+# create_app()
 
 # page = requests.get("https://www.berlinovo.de/en/housing/search")
 # page.content
