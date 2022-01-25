@@ -15,7 +15,9 @@ class HouseBot:
 
         self.TELEGRAM_API_KEY = os.environ.get("TELEGRAM_API_KEY")
         self.bot = telebot.TeleBot(self.TELEGRAM_API_KEY)
-        
+        self.INTERVAL_SECONDS = 60 * 60
+
+        # print(self.TELEGRAM_API_KEY)
 
         # Handle /start command
         @self.bot.message_handler(commands=["start"])
@@ -26,7 +28,7 @@ class HouseBot:
 
             # run it with an interval
             self.scheduler = BackgroundScheduler(timezone="Europe/Berlin")
-            self.scheduler.add_job(func=lambda: self.fetch_data(message), id="fetch_data", trigger="interval", seconds=1) #60 * 60)
+            self.scheduler.add_job(func=lambda: self.fetch_data(message), id="fetch_data", trigger="interval", seconds=self.INTERVAL_SECONDS)
             self.scheduler.start()
 
             atexit.register(lambda: self.scheduler.shutdown())
@@ -44,8 +46,14 @@ class HouseBot:
         data["result"] = 5 + 5
         result = data["result"]
 
-        self.bot.reply_to(message, result)
+        self.bot.send_message(message.chat.id, result)
 
-house_bot = HouseBot()
+
+def create_app():
+    """
+    this function is for production environments
+    """
+    app = HouseBot()
+    return app
 
 

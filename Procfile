@@ -1,1 +1,1 @@
-web: python3 bot.py
+web: gunicorn --workers=4 'bot:create_app()'
