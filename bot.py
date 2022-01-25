@@ -1,6 +1,9 @@
+#%%
 from dotenv import load_dotenv
 import os
 import telebot
+import requests
+from bs4 import BeautifulSoup
 
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -15,7 +18,7 @@ class HouseBot:
 
         self.TELEGRAM_API_KEY = os.environ.get("TELEGRAM_API_KEY")
         self.bot = telebot.TeleBot(self.TELEGRAM_API_KEY)
-        self.INTERVAL_SECONDS = 60 * 60
+        self.INTERVAL_SECONDS = 60 * 60 * 6 # hours
 
         # print(self.TELEGRAM_API_KEY)
 
@@ -42,9 +45,19 @@ class HouseBot:
         self.bot.polling()
 
     def fetch_data(self, message):
+
+        page = requests.get("https://www.berlinovo.de/en/housing/search")
+        soup = BeautifulSoup(page.content, 'html.parser')
+
+        source_count = soup.find('span', class_='source-summary-count').get_text()
+        titles_soup = soup.find_all('div', class_='block-field-blocknodeapartmenttitle')
+        titles = [title.div.span.a.get_text() for title in titles_soup]
+
         data = {}
-        data["result"] = 5 + 5
-        result = data["result"]
+        data["source_count"] = source_count
+        data["titles"] = titles
+
+        result = data["source_count"] + "\n" +  data["titles"] 
 
         self.bot.send_message(message.chat.id, result)
 
@@ -57,3 +70,18 @@ def create_app():
     return app
 
 
+# page = requests.get("https://www.berlinovo.de/en/housing/search")
+# page.content
+
+# soup = BeautifulSoup(page.content, 'html.parser')
+# source_count = soup.find('span', class_='source-summary-count').get_text()
+
+# titles = soup.find_all('div', class_='block-field-blocknodeapartmenttitle')
+# availabilities = soup.find_all('div', class_='field--name-field-available-date')
+# availabilities = soup.find_all('div', class_='field--name-field-available-date')
+# postal_codes = soup.find_all('div', class_='field--name-field-available-date')
+# warm_rents = soup.find_all('div', class_='field--name-field-available-date')
+
+# print(source_count)
+# [title.div.span.a.get_text() for title in titles]
+# [availability.find_all("div", {"class": "field__item"}) for availability in availabilities]
