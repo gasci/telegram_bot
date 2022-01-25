@@ -39,7 +39,7 @@ class HouseBot:
             
         self.bot.polling()
 
-    def fetch_data(self, message, output):
+    def fetch_data(self, message):
         data = {}
         data["result"] = 5 + 5
         result = data["result"]
