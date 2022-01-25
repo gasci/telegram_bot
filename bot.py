@@ -66,7 +66,7 @@ class HouseBot:
         
         if not title_prints:
 
-            title_prints = "No WBS results"
+            title_prints = "No non-WBS results"
 
         result = str(data["source_count"]) + "\n" +  title_prints + "\n"
 
