@@ -18,7 +18,7 @@ class HouseBot:
 
         self.TELEGRAM_API_KEY = os.environ.get("TELEGRAM_API_KEY")
         self.bot = telebot.TeleBot(self.TELEGRAM_API_KEY)
-        self.INTERVAL_SECONDS = 60 * 60 * os.environ.get("INTERVAL_HOURS") # hours
+        self.INTERVAL_SECONDS = 60 * 60 * int(os.environ.get("INTERVAL_HOURS")) # hours
 
         # print(self.TELEGRAM_API_KEY)
 
