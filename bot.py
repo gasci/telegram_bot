@@ -20,16 +20,13 @@ class HouseBot:
         # Handle /start command
         @self.bot.message_handler(commands=["start"])
         def start_command(message):
-            data = self.fetch_data()
-
-            result = data["result"]
             
             # run the function once
-            self.reply_to_bot(message, result)
+            self.fetch_data(message)
 
             # run it with an interval
             self.scheduler = BackgroundScheduler(timezone="Europe/Berlin")
-            self.scheduler.add_job(func=lambda: self.reply_to_bot(message, result), trigger="interval", seconds=1) #60 * 60)
+            self.scheduler.add_job(func=lambda: self.fetch_data(message), id="fetch_data", trigger="interval", seconds=1) #60 * 60)
             self.scheduler.start()
 
             atexit.register(lambda: self.scheduler.shutdown())
@@ -38,19 +35,16 @@ class HouseBot:
         # Handle /start command
         @self.bot.message_handler(commands=["stop"])
         def stop_command(message):
-            self.scheduler.shutdown()
+            self.scheduler.pause_job(job_id='fetch_data')
             
         self.bot.polling()
 
-    def reply_to_bot(self, message, output):
-        self.bot.reply_to(message, output)
-
-    def fetch_data(self):
-
+    def fetch_data(self, message, output):
         data = {}
         data["result"] = 5 + 5
+        result = data["result"]
 
-        return data
+        self.bot.reply_to(message, result)
 
 house_bot = HouseBot()
 
